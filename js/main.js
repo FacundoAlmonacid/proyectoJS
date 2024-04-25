@@ -1,141 +1,118 @@
-let nombre
-let ingreso
-let opcion;
-let continua;
-let kilosIngresados;
-let presupuestoAluminio = 0; // Presupuesto para el aluminio
-let presupuestoCobre = 0; // Presupuesto para el cobre
-let presupuestoPlomo = 0; // Presupuesto para el plomo
-let presupuestoTotal = 0; // Presupuesto total
-
-const precioAluminio = 6000; // Precio del aluminio por kilo
-const precioCobre = 8000; // Precio del cobre por kilo
-const precioPlomo = 2000; // Precio del plomo por kilo
-
-
-
-
-function pedirNombre(nombre) {
-  nombre = prompt("ingrese su nombre")
-  while (nombre == "") {
-    alert("Ingrese un nombre correcto")
-    nombre = prompt("Ingrese su nombre")
+class Metales {
+  constructor(nombre, precio) {
+    this.nombre = nombre;
+    this.precio = precio;
+    this.presupuestoParcial = 0;
+    this.presupuestoTotal = 0;
   }
-  return nombre
-}
 
-function verificacionIngreso(ingreso) {
-  ingreso = prompt("Hola bienvenidos a reciclArg \n ¿Desea reciclar algun producto")
-  while (ingreso == "" || (ingreso !== "si" && ingreso != "no")) {
-    alert("Opción incorrecta, \nIngrese si/no");
-    ingreso = prompt("Hola bienvenidos a reciclArg \n ¿Desea reciclar algun producto?\n")
-  }
-  return ingreso
-}
+  presupuestoParcialMetales() {
+    let confirmacion = prompt(`El precio de ${this.nombre} es de ${this.precio}\nDesea continuar? si/no`);
 
-function verificacionOpciones(opcion) {
+    while (confirmacion != "si" && confirmacion != "no") {
+      alert("ingrese si / no")
+      confirmacion = prompt(`El precio de ${this.nombre} es de ${this.precio}\nDesea continuar? si/no`);
 
-  opcion = parseInt(prompt("Hola " + nombre + ", elige la opción:\n1. Aluminio\n2. Cobre\n3. Plomo\n4. Ver presupuesto total\n5. Salir"));
-
-  while (opcion == "" || (opcion < 1 || opcion > 5 || isNaN(opcion))) {
-    alert("Opción incorrecta \n Ingrese un numero segun su opcion");
-    opcion = parseInt(prompt("Hola " + nombre + ", elige la opción:\n1. Aluminio\n2. Cobre\n3. Plomo\n4. Ver presupuesto total\n5. Salir"));
+    }
+    if (confirmacion === "si") {
+      let cantMetal = parseInt(prompt(`Ingrese la cantidad en kilos de ${this.nombre} que desee tasar`));
+      this.presupuestoParcial = this.precio * cantMetal;
+      alert(`Tu presupuesto de ${this.nombre} fue de ${this.presupuestoParcial}`);
+      this.presupuestoTotal += this.presupuestoParcial
+      presupuestos.push(this.presupuestoParcial)
+    }
 
   }
-  return opcion
+
+
 }
 
+const metalesArray = [
+  new Metales("aluminio", 4500),//0
+  new Metales("cobre", 7000),   //1
+  new Metales("plomo", 2000),   //2
+];
+
+const presupuestos = []
 
 
+function verificacionIngreso() {
+  let ingreso;
+  do {
+    ingreso = prompt("Hola bienvenidos a reciclArg\n¿Desea reciclar algun producto?").toLowerCase();
+    if (ingreso !== "si" && ingreso !== "no") {
+      alert("Opción incorrecta, ingrese si/no");
+    }
+  } while (ingreso !== "si" && ingreso !== "no");
+  return ingreso;
+}
 
+function pedirNombre() {
+  let nombre;
+  do {
+    nombre = prompt("Ingrese su nombre");
+    if (nombre === "") {
+      alert("Ingrese un nombre correcto");
+    }
+  } while (nombre === "");
+  return nombre;
+}
 
+function eliminarPresupuesto() {
+  let opcionesEliminar = "";
+  for (let i = 0; i < presupuestos.length; i++) {
+    opcionesEliminar += `${i}.${presupuestos[i]}\n`;
+  }
 
+  let indiceAEliminar = prompt(`Elige el presupuesto que desea eliminar:\n${opcionesEliminar}`);//de aca sale el numero indice
+  presupuestos.splice(indiceAEliminar, 1)
+  
 
+}
 
-ingreso = verificacionIngreso()
+//inicio programa
 
+let nombre;
+let ingreso = verificacionIngreso();
 
-
-
-if (ingreso == "si") {
-  nombre = pedirNombre()
-
+if (ingreso === "si") {
+  nombre = pedirNombre();
+  let opcion;
 
   do {
-
-    opcion = verificacionOpciones()
-
-
+    opcion = parseInt(prompt(`Hola ${nombre}, elige la opción:\n1. Aluminio\n2. Cobre\n3. Plomo\n4. Ver presupuesto total\n5. Eliminar presupuestos \n6. Salir`));
 
     switch (opcion) {
+
       case 1:
-        continua = prompt("El precio del aluminio es de " + precioAluminio + "\nDesea continuar?");
-
-        while (continua == "" || (continua != "si" && continua != "no")) {
-          alert("Ingrese si/no");
-          continua = prompt("El precio del aluminio es de " + precioAluminio + "\nDesea continuar?");
-        }
-
-        if (continua == "si") {
-          kilosIngresados = parseInt(prompt("Ingrese en kilos la cantidad que desea vender"));
-          if (!isNaN(kilosIngresados)) {
-            presupuestoAluminio += precioAluminio * kilosIngresados; // Suma al presupuesto del aluminio
-            alert("Su presupuesto actual de aluminio es: " + presupuestoAluminio);
-          } else {
-            alert("Ingrese un valor numérico válido.");
-          }
-        }
+        metalesArray[0].presupuestoParcialMetales();
         break;
 
       case 2:
-        continua = prompt("El precio del cobre es de " + precioCobre + "\nDesea continuar?")
+        metalesArray[1].presupuestoParcialMetales();
 
-        while (continua == "" || (continua != "si" && continua != "no")) {
-          alert("Ingrese si/no");
-          continua = prompt("El precio del cobre es de " + precioCobre + "\nDesea continuar?")
-        }
 
-        if (continua == "si") {
-          kilosIngresados = parseInt(prompt("Ingrese en kilos la cantidad que desea vender"));
-          if (!isNaN(kilosIngresados)) {
-            presupuestoCobre += precioCobre * kilosIngresados; // Suma al presupuesto del cobre
-            alert("Su presupuesto actual de cobre es: " + presupuestoCobre);
-          } else {
-            alert("Ingrese un valor numérico válido.");
-          }
-        }
         break;
 
       case 3:
-        continua = prompt("El precio del plomo es de " + precioPlomo + "\nDesea continuar?")
+        metalesArray[2].presupuestoParcialMetales();
 
-        while (continua == "" || (continua != "si" && continua != "no")) {
-          alert("Ingrese si/no");
-          continua = prompt("El precio del plomo es de " + precioPlomo + "\nDesea continuar?")
-        }
-
-        if (continua == "si") {
-          kilosIngresados = parseInt(prompt("Ingrese en kilos la cantidad que desea vender"));
-          if (!isNaN(kilosIngresados)) {
-            presupuestoPlomo += precioPlomo * kilosIngresados; // Suma al presupuesto del plomo
-            alert("Su presupuesto actual de plomo es: " + presupuestoPlomo);
-          } else {
-            alert("Ingrese un valor numérico válido.");
-          }
-        }
         break;
 
       case 4:
-        // Calcular el presupuesto total sumando los presupuestos individuales
-        presupuestoTotal = presupuestoAluminio + presupuestoCobre + presupuestoPlomo;
-        alert("Su presupuesto total es: " + presupuestoTotal);
+        const total = presupuestos.reduce((acc, el) => acc + el, 0)
+
+
+        alert(`Presupuesto total acumulado: $${total}`);
         break;
 
-      default:
-        alert(nombre + " Muchas gracias por reciclar");
-    }
-  } while (opcion != 5); // Continuar mientras la opción no sea "Salir"
+      case 5:
 
-} else if (ingreso == "no") {
-  alert("Muchas gracias por su visita");
+        eliminarPresupuesto()
+        break
+
+
+    }
+  } while (opcion !== 6);
 }
+else (alert("Muchas gracias por tu visita"))
