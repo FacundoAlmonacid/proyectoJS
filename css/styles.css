@@ -1,0 +1,13 @@
+#metales {
+ display: flex;
+ flex-direction: column;
+ 
+}
+
+.tablaInicio {
+   display: flex;
+align-items: center;
+gap: 20px;
+border-style: solid;
+margin: 5px;
+}
