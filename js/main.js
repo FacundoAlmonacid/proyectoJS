@@ -43,9 +43,10 @@ const divtotales = document.getElementById("totales")
 function agregarPresupuesto(metal, cantidadTasar) {
   const presupuestoParcial = metal.precio * cantidadTasar
   presupuestos.push(presupuestoParcial)
+  console.log(presupuestos)
 
   const indicePresupuesto=presupuestos.findIndex((el)=>{
-    return 
+    
   } )
 }
 
@@ -75,7 +76,11 @@ function renderizarMetales() {
       const cantidadTasar = parseInt(inputCantidad.value);
 
       agregarPresupuesto(metal, cantidadTasar)
-
+      
+      let total=presupuestos.reduce((acumulador,presupuesto)=>{
+        return acumulador + presupuesto
+      },0)
+      console.log(total)
 
     })
 
@@ -95,3 +100,4 @@ function renderizarMetales() {
 //inicio del programa
 
 renderizarMetales()
+
