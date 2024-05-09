@@ -1,64 +1,140 @@
 class Metales {
-  constructor(nombre, precio) {
+  constructor(id, nombre, precio, presupuestoParcial, cantidad) {
+    this.id = id
     this.nombre = nombre;
     this.precio = precio;
-    this.presupuestoParcial = 0;
+    this.presupuestoParcial = presupuestoParcial;
+    this.cantidad = cantidad
+  }
+  //Metodos
+}
+const metalesArray = [
+  new Metales(1, "Aluminio", 4500, 0, 0),//presupuesto parcial comienza en cero
+  new Metales(2, "Cobre", 7000, 0, 0),//presupuesto parcial comienza en cero
+  new Metales(3, "Plomo", 2000, 0, 0),//presupuesto parcial comienza en cero
+  new Metales(4, "Hierro", 3000, 0, 0),//presupuesto parcial comienza en cero
+  new Metales(5, "Bronce", 2500, 0, 0)//presupuesto parcial comienza en cero
+];
+//creamos un array tipo carrito
+let presupuestos = []
+
+
+//-----------Funciones-------------
+
+//------funcion de obtener presupuestos local store ls----------
+
+function presupuestoLocalS() {
+  const presupuestoCarritoLocalS = JSON.parse(localStorage.getItem("presupuestos"))
+
+  if (presupuestoCarritoLocalS) {
+    presupuestos = presupuestoCarritoLocalS
 
   }
+  renderizarPresupuestosCarrito(presupuestos)
 
-  //Metodos
-
+}
+function guardarProductoLocalS() {
+  const json = JSON.stringify(presupuestos)
+  localStorage.setItem("presupuestos", json)
 
 }
 
-const metalesArray = [
-  new Metales("aluminio", 4500),
-  new Metales("cobre", 7000),
-  new Metales("plomo", 2000),
-  new Metales("hierro", 2000),
-  new Metales("bronce", 2000)
-];
-
-const presupuestos = []
+//funcion suma todos los totales
 
 
 
+//--------función renderizar el carrito------------
 
+function renderizarPresupuestosCarrito(presupuestos) {
 
+  presupuestoCarrito.innerHTML = ""
 
+  //ojo presupuesto con s o sin s
+  for (const presupuesto of presupuestos) {
+    //tabla nombre,precio,cantidad
+    const tr = document.createElement("tr")
 
+    tr.innerHTML = ` 
+  <td>${presupuesto.nombre}</td> 
+  <td>$${presupuesto.precio} xKg</td>
+  <td>${presupuesto.cantidad}Kg</td>
+  <td>$${presupuesto.precio * presupuesto.cantidad} </td>`
+    //agregamos la tabla tr al dom
+    presupuestoCarrito.append(tr)
 
+    const botonBorrarPresupuesto = document.createElement("button")
+    botonBorrarPresupuesto.innerText = "Borrar"
+    botonBorrarPresupuesto.addEventListener("click", () => {
+      eliminarPresupuestoCarrito(presupuesto)
+    })
+    tr.append(botonBorrarPresupuesto)
+  }
+  const acaTotal = document.createElement("p")
+  acaTotal.className = "total"
+  acaTotal.innerHTML = `Total del Presupuesto   <strong> ${sumatotales()}  </strong> `
+  presupuestoCarrito.append(acaTotal)
+}
 
+//--------funcion eliminar presupuesto en el carrito ------------
+function eliminarPresupuestoCarrito(presupuestoCarrito) {
+  const indexElimenar = presupuestos.findIndex(item => item.id === presupuestoCarrito.id);
+  presupuestos.splice(indexElimenar, 1)
+  renderizarPresupuestosCarrito(presupuestos)
+  guardarProductoLocalS()
 
-//DOM
+}
 
-const divMetales = document.getElementById("metales")
-
-
-const divtotales = document.getElementById("totales")
-
-
-//Funciones
+//----------funcion de agregar presupuesto a cada metal------------
 
 function agregarPresupuesto(metal, cantidadTasar) {
-  const presupuestoParcial = metal.precio * cantidadTasar
-  presupuestos.push(presupuestoParcial)
-  console.log(presupuestos)
+  const presupuestoXMetal = metal.precio * cantidadTasar;
+  metal.presupuestoParcial += presupuestoXMetal;
 
-  const indicePresupuesto=presupuestos.findIndex((el)=>{
-    
-  } )
+  // Buscar si ya existe el metal en el array de presupuestos
+  const index = presupuestos.findIndex(item => item.id === metal.id);
+
+  if (index !== -1) {
+    // Si el metal ya existe en el array de presupuestos, actualiza su presupuesto
+    presupuestos[index].presupuestoParcial += presupuestoXMetal;
+    presupuestos[index].cantidad += cantidadTasar
+
+  } else {
+    // Si el metal no existe en el array de presupuestos, agrégalo"push"
+    presupuestos.push({
+      id: metal.id,
+      nombre: metal.nombre,
+      precio: metal.precio,
+      cantidad: metal.cantidad,
+      presupuestoParcial: presupuestoXMetal
+    });
+  }
+  //------funcion renderizar los presupuestos tipo carrito-----------
+  renderizarPresupuestosCarrito(presupuestos)
+  guardarProductoLocalS()
+
+  console.log(index)
 }
+//------------funcion suma todos los totales-----------
+function sumatotales() {
+  let total = presupuestos.reduce((acumulador, presupuesto) => {
 
+    if (presupuestos.length === 0)
+      return 0; // Si no hay presupuestos, devuelve 0
 
+    return acumulador + presupuesto.presupuestoParcial
+  }, 0)
+  return total
+}
+//---------funcion renderiza los metales para ver en pantalla--------
 
-function renderizarMetales() {
+function renderizarMetales(metalesArray) {
+
+  divMetales.innerHTML = ""
+
   for (const metal of metalesArray) {
-    console.log(metal)
 
     const tablaInicio = document.createElement("div")
     tablaInicio.className = "tablaInicio"
-
 
     const h2 = document.createElement("h2")
     h2.innerText = metal.nombre
@@ -70,34 +146,42 @@ function renderizarMetales() {
     inputCantidad.type = "number"
     inputCantidad.placeholder = "ingrese cantidad a tasar"
 
+    //boton agregar , de aca sale cantidad a tasar 
     const botonAgregar = document.createElement("button")
     botonAgregar.innerText = "agregar"
     botonAgregar.addEventListener("click", () => {
-      const cantidadTasar = parseInt(inputCantidad.value);
+      const cantidadTasar = parseInt(inputCantidad.value)
+      metal.cantidad += cantidadTasar
 
+      //---llamamos funcion para recursividad----
+      renderizarMetales(metalesArray)
+
+      //----funcion de agregar al "carrito"-------
       agregarPresupuesto(metal, cantidadTasar)
-      
-      let total=presupuestos.reduce((acumulador,presupuesto)=>{
-        return acumulador + presupuesto
-      },0)
-      console.log(total)
 
+
+      console.log(metalesArray)
     })
-
-
+    //
     tablaInicio.append(h2, h3, inputCantidad, botonAgregar)
     divMetales.append(tablaInicio)
 
   }
 
-
 }
 
+//-------------inicio del programa------------------
+
+//------DOMinios para capturar--------
+const divMetales = document.getElementById("metales")
+
+const presupuestoCarrito = document.getElementById("presupuestos_carrito")
 
 
 
+presupuestoLocalS()
+renderizarMetales(metalesArray)
 
-//inicio del programa
 
-renderizarMetales()
+
 

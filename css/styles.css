@@ -1,13 +1,30 @@
 #metales {
- display: flex;
- flex-direction: column;
- 
+    display: flex;
+    flex-direction: column;
+    width: max-content;
+
 }
 
 .tablaInicio {
-   display: flex;
-align-items: center;
-gap: 20px;
-border-style: solid;
-margin: 5px;
+    background-color: rgb(168, 187, 210);
+    height: 40px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border-style: solid;
+    margin: 5px;
+    padding: 0;
+}
+
+table,
+th,
+td {
+    background-color: rgba(168, 187, 210, 0.431);
+    border: 1px solid black;
+}
+
+.total {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 1.3rem;
+    text-decoration:underline ;
 }
