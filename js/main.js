@@ -91,7 +91,7 @@ console.log(indexEliminar)
     renderizarPresupuestosCarrito(presupuestos);
 
     // Guarda los cambios en el almacenamiento local
-   // guardarProductoLocalS();
+    guardarProductoLocalS();
   
 }
 
