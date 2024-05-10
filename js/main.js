@@ -77,18 +77,27 @@ function renderizarPresupuestosCarrito(presupuestos) {
 
 //--------funcion eliminar presupuesto en el carrito ------------
 function eliminarPresupuestoCarrito(presupuestoCarrito) {
-  const indexElimenar = presupuestos.findIndex(item => item.id === presupuestoCarrito.id);
-  presupuestos.splice(indexElimenar, 1)
-  renderizarPresupuestosCarrito(presupuestos)
-  guardarProductoLocalS()
+  // Encuentra el índice del presupuesto en el array de presupuestos
+  const indexEliminar = presupuestos.findIndex(item => item.id === presupuestoCarrito.id);
+console.log(indexEliminar)
 
+ 
+
+    // Elimina el presupuesto del array de presupuestos
+    presupuestos.splice(indexEliminar, 1);
+    console.log(presupuestos)
+
+    // Renderiza los presupuestos actualizados
+    renderizarPresupuestosCarrito(presupuestos);
+
+    // Guarda los cambios en el almacenamiento local
+   // guardarProductoLocalS();
+  
 }
 
 //----------funcion de agregar presupuesto a cada metal------------
-
 function agregarPresupuesto(metal, cantidadTasar) {
   const presupuestoXMetal = metal.precio * cantidadTasar;
-  metal.presupuestoParcial += presupuestoXMetal;
 
   // Buscar si ya existe el metal en el array de presupuestos
   const index = presupuestos.findIndex(item => item.id === metal.id);
@@ -96,24 +105,28 @@ function agregarPresupuesto(metal, cantidadTasar) {
   if (index !== -1) {
     // Si el metal ya existe en el array de presupuestos, actualiza su presupuesto
     presupuestos[index].presupuestoParcial += presupuestoXMetal;
-    presupuestos[index].cantidad += cantidadTasar
-
+    presupuestos[index].cantidad += cantidadTasar;
   } else {
-    // Si el metal no existe en el array de presupuestos, agrégalo"push"
+    // Si el metal no existe en el array de presupuestos
     presupuestos.push({
       id: metal.id,
       nombre: metal.nombre,
       precio: metal.precio,
-      cantidad: metal.cantidad,
+      cantidad: cantidadTasar,
       presupuestoParcial: presupuestoXMetal
     });
   }
-  //------funcion renderizar los presupuestos tipo carrito-----------
-  renderizarPresupuestosCarrito(presupuestos)
-  guardarProductoLocalS()
 
-  console.log(index)
+  // Actualizar la cantidad y el presupuesto parcial del metal en metalesArray
+  metal.cantidad += cantidadTasar;
+  metal.presupuestoParcial += presupuestoXMetal;
+
+  // Renderizar los presupuestos tipo carrito
+  renderizarPresupuestosCarrito(presupuestos);
+  // Guardar los cambios en el almacenamiento local
+  guardarProductoLocalS();
 }
+
 //------------funcion suma todos los totales-----------
 function sumatotales() {
   let total = presupuestos.reduce((acumulador, presupuesto) => {
@@ -160,7 +173,7 @@ function renderizarMetales(metalesArray) {
       agregarPresupuesto(metal, cantidadTasar)
 
 
-      console.log(metalesArray)
+      
     })
     //
     tablaInicio.append(h2, h3, inputCantidad, botonAgregar)
@@ -181,7 +194,3 @@ const presupuestoCarrito = document.getElementById("presupuestos_carrito")
 
 presupuestoLocalS()
 renderizarMetales(metalesArray)
-
-
-
-
