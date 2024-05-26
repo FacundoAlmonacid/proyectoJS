@@ -1,3 +1,4 @@
+
 class Metales {
   constructor(id, nombre, precio, presupuestoParcial, cantidad) {
     this.id = id
@@ -8,59 +9,52 @@ class Metales {
   }
   //Metodos
 }
-const metalesArray = [
-  new Metales(1, "Aluminio", 4500, 0, 0),//presupuesto parcial comienza en cero
-  new Metales(2, "Cobre", 7000, 0, 0),//presupuesto parcial comienza en cero
-  new Metales(3, "Plomo", 2000, 0, 0),//presupuesto parcial comienza en cero
-  new Metales(4, "Hierro", 3000, 0, 0),//presupuesto parcial comienza en cero
-  new Metales(5, "Bronce", 2500, 0, 0)//presupuesto parcial comienza en cero
-];
-//creamos un array tipo carrito
+
+let metalesArray=[]
+
+//--------0-----función------0----------
+//utilización de archivo json(simulación de Api)
+function obtenerMetalesJsonApi(){
+fetch("../metales.json")
+.then((Response)=>{
+  Response.json().then((Responsejson)=>{
+    metalesArray=Responsejson 
+    renderizarMetales(metalesArray)
+
+  })
+})
+}
+obtenerMetalesJsonApi()
+
 let presupuestos = []
 
-
-//-----------Funciones-------------
-
-//------funcion de obtener presupuestos local store ls----------
-
-function presupuestoLocalS() {
+//--------0-----función------0----------
+// Carga el carrito de presupuestos desde localStorage
+const presupuestoLocalS = () => {
   const presupuestoCarritoLocalS = JSON.parse(localStorage.getItem("presupuestos"))
-
-  if (presupuestoCarritoLocalS) {
-    presupuestos = presupuestoCarritoLocalS
-
-  }
+  presupuestos = presupuestoCarritoLocalS ? presupuestoCarritoLocalS : []
   renderizarPresupuestosCarrito(presupuestos)
-
 }
+
+//--------0-----función------0----------
+// Guarda el carrito de presupuestos en localStorage
 function guardarProductoLocalS() {
   const json = JSON.stringify(presupuestos)
   localStorage.setItem("presupuestos", json)
-
 }
 
-//funcion suma todos los totales
-
-
-
-//--------función renderizar el carrito------------
-
+//--------0-----función------0----------
+// Renderiza el carrito de presupuestos en la página
 function renderizarPresupuestosCarrito(presupuestos) {
-
   presupuestoCarrito.innerHTML = ""
 
-  //ojo presupuesto con s o sin s
   for (const presupuesto of presupuestos) {
-    //tabla nombre,precio,cantidad
     const tr = document.createElement("tr")
-
     tr.innerHTML = ` 
-  <td>${presupuesto.nombre}</td> 
-  <td>$${presupuesto.precio} xKg</td>
-  <td>${presupuesto.cantidad}Kg</td>
-  <td>$${presupuesto.precio * presupuesto.cantidad} </td>`
-    //agregamos la tabla tr al dom
-    presupuestoCarrito.append(tr)
+      <td>${presupuesto.nombre}</td> 
+      <td>$${presupuesto.precio} xKg</td>
+      <td>${presupuesto.cantidad}Kg</td>
+      <td>$${presupuesto.precio * presupuesto.cantidad}</td>`
 
     const botonBorrarPresupuesto = document.createElement("button")
     botonBorrarPresupuesto.innerText = "Borrar"
@@ -68,84 +62,86 @@ function renderizarPresupuestosCarrito(presupuestos) {
       eliminarPresupuestoCarrito(presupuesto)
     })
     tr.append(botonBorrarPresupuesto)
+    presupuestoCarrito.append(tr)
   }
+
+  const total = sumatotales()
   const acaTotal = document.createElement("p")
   acaTotal.className = "total"
-  acaTotal.innerHTML = `Total del Presupuesto   <strong> ${sumatotales()}  </strong> `
+  acaTotal.innerHTML = `Total del Presupuesto <strong>${total}</strong>`
   presupuestoCarrito.append(acaTotal)
 }
-
-//--------funcion eliminar presupuesto en el carrito ------------
+//--------0-----función------0----------
+// Elimina un presupuesto del carrito
 function eliminarPresupuestoCarrito(presupuestoCarrito) {
-  // Encuentra el índice del presupuesto en el array de presupuestos
-  const indexEliminar = presupuestos.findIndex(item => item.id === presupuestoCarrito.id);
-console.log(indexEliminar)
-
- 
-
-    // Elimina el presupuesto del array de presupuestos
-    presupuestos.splice(indexEliminar, 1);
-    console.log(presupuestos)
-
-    // Renderiza los presupuestos actualizados
-    renderizarPresupuestosCarrito(presupuestos);
-
-    // Guarda los cambios en el almacenamiento local
-    guardarProductoLocalS();
-  
+  const indexEliminar = presupuestos.findIndex(item => item.id === presupuestoCarrito.id)
+  if (indexEliminar > -1) {
+    presupuestos.splice(indexEliminar, 1)
+    renderizarPresupuestosCarrito(presupuestos)
+    guardarProductoLocalS()
+  }
 }
 
-//----------funcion de agregar presupuesto a cada metal------------
+//--------0-----función------0----------
+// Agrega un presupuesto para un metal específico al carrito
 function agregarPresupuesto(metal, cantidadTasar) {
-  const presupuestoXMetal = metal.precio * cantidadTasar;
+  if (isNaN(cantidadTasar) || cantidadTasar <= 0) {
+    Swal.fire({
+      title: 'Error!',
+      text: 'Ingrese numero correcto',
+      icon: 'error',
+      confirmButtonText: 'Aceptar'
+    })
+    
+    return
+  }
 
-  // Buscar si ya existe el metal en el array de presupuestos
-  const index = presupuestos.findIndex(item => item.id === metal.id);
+  const presupuestoXMetal = metal.precio * cantidadTasar
+  const index = presupuestos.findIndex(item => item.id === metal.id)
 
   if (index !== -1) {
-    // Si el metal ya existe en el array de presupuestos, actualiza su presupuesto
-    presupuestos[index].presupuestoParcial += presupuestoXMetal;
-    presupuestos[index].cantidad += cantidadTasar;
+    presupuestos[index].presupuestoParcial += presupuestoXMetal
+    presupuestos[index].cantidad += cantidadTasar
   } else {
-    // Si el metal no existe en el array de presupuestos
+    Toastify({
+      text: "Presupuesto agregado",
+      duration: 3000,
+      destination: false,
+      newWindow: true,
+      close: false,
+      gravity: "top", // `top` or `bottom`
+      position: "center", // `left`, `center` or `right`
+      stopOnFocus: true, // Prevents dismissing of toast on hover
+      style: {
+        background: "linear-gradient(to right, #00b09b, #96c93d)",
+      },
+      onClick: function(){} // Callback after click
+    }).showToast();
     presupuestos.push({
       id: metal.id,
       nombre: metal.nombre,
       precio: metal.precio,
       cantidad: cantidadTasar,
       presupuestoParcial: presupuestoXMetal
-    });
+    })
   }
 
-  // Actualizar la cantidad y el presupuesto parcial del metal en metalesArray
-  metal.cantidad += cantidadTasar;
-  metal.presupuestoParcial += presupuestoXMetal;
-
-  // Renderizar los presupuestos tipo carrito
-  renderizarPresupuestosCarrito(presupuestos);
-  // Guardar los cambios en el almacenamiento local
-  guardarProductoLocalS();
+  renderizarPresupuestosCarrito(presupuestos)
+  guardarProductoLocalS()
 }
 
-//------------funcion suma todos los totales-----------
+//--------0-----función------0----------
+// Calcula el total de todos los presupuestos en el carrito
 function sumatotales() {
-  let total = presupuestos.reduce((acumulador, presupuesto) => {
-
-    if (presupuestos.length === 0)
-      return 0; // Si no hay presupuestos, devuelve 0
-
-    return acumulador + presupuesto.presupuestoParcial
-  }, 0)
-  return total
+  return presupuestos.reduce((acumulador, presupuesto) => acumulador + presupuesto.presupuestoParcial, 0)
 }
-//---------funcion renderiza los metales para ver en pantalla--------
 
+//--------0-----función------0----------
+// Renderiza la lista de metales disponibles en la página
 function renderizarMetales(metalesArray) {
-
   divMetales.innerHTML = ""
 
   for (const metal of metalesArray) {
-
     const tablaInicio = document.createElement("div")
     tablaInicio.className = "tablaInicio"
 
@@ -157,40 +153,70 @@ function renderizarMetales(metalesArray) {
 
     const inputCantidad = document.createElement("input")
     inputCantidad.type = "number"
-    inputCantidad.placeholder = "ingrese cantidad a tasar"
+    inputCantidad.placeholder = "Ingrese cantidad a tasar"
 
-    //boton agregar , de aca sale cantidad a tasar 
     const botonAgregar = document.createElement("button")
-    botonAgregar.innerText = "agregar"
+    botonAgregar.innerText = "Agregar"
+    botonAgregar.className="botonAgregar"
     botonAgregar.addEventListener("click", () => {
       const cantidadTasar = parseInt(inputCantidad.value)
-      metal.cantidad += cantidadTasar
-
-      //---llamamos funcion para recursividad----
-      renderizarMetales(metalesArray)
-
-      //----funcion de agregar al "carrito"-------
       agregarPresupuesto(metal, cantidadTasar)
-
-
-      
+      renderizarMetales(metalesArray)
     })
-    //
     tablaInicio.append(h2, h3, inputCantidad, botonAgregar)
     divMetales.append(tablaInicio)
-
   }
-
 }
+//--------0-----función y acciones------0----------
+// Limpia el carrito de presupuestos y el localStorage
 
-//-------------inicio del programa------------------
+function limpiar() {
+  presupuestoCarrito.innerHTML = ""
+  presupuestos = []
+  localStorage.removeItem('presupuestos')
+}
+const limpiarBoton = document.getElementById('limpiarBoton')
+limpiarBoton.addEventListener('click', ()=>{
+  
+const swalWithBootstrapButtons = Swal.mixin({
+  customClass: {
+    confirmButton: "btn btn-success",
+    cancelButton: "btn btn-danger"
+  },
+  buttonsStyling: false
+});
+swalWithBootstrapButtons.fire({
+  title: "Seguro que quieres continuar?",
+  text: "Se borrara toda base de datos",
+  icon: "warning",
+  showCancelButton: true,
+  confirmButtonText: "si, continuar",
+  cancelButtonText: "No, cancelar!",
+  reverseButtons: true
+}).then((result) => {
+  if (result.isConfirmed) {
+    limpiar()
+    swalWithBootstrapButtons.fire({
+      title: "eliminada!",
+      text: "Tu base de datos ha sido eliminada",
+      icon: "success"
+      
+    });
+  } else if (
+    /* Read more about handling dismissals below */
+    result.dismiss === Swal.DismissReason.cancel
+  ) {
+    swalWithBootstrapButtons.fire({
+      title: "Cancelado",
+      text: "Acción eliminar cancelada",
+      icon: "error"
+    });
+  }
+});
+})
 
-//------DOMinios para capturar--------
 const divMetales = document.getElementById("metales")
-
 const presupuestoCarrito = document.getElementById("presupuestos_carrito")
-
-
 
 presupuestoLocalS()
 renderizarMetales(metalesArray)

@@ -1,6 +1,7 @@
 #metales {
     display: flex;
     flex-direction: column;
+    align-items: ;
     width: max-content;
 
 }
@@ -9,22 +10,30 @@
     background-color: rgb(168, 187, 210);
     height: 40px;
     display: flex;
-    align-items: center;
     gap: 10px;
     border-style: solid;
     margin: 5px;
-    padding: 0;
+    padding: 3px;
 }
 
 table,
 th,
 td {
+
     background-color: rgba(168, 187, 210, 0.431);
     border: 1px solid black;
+    padding: 5px;
+    border-style: solid;
+    border-color: blue;
 }
+
 
 .total {
     font-family: Arial, Helvetica, sans-serif;
     font-size: 1.3rem;
     text-decoration:underline ;
+    
 }
+
+
+

@@ -1,0 +1,37 @@
+[
+    {
+        "id": 1,
+        "nombre": "Aluminio",
+        "precio": 4500,
+        "presupuestoParcial": 0,
+        "cantidad": 0
+    },
+    {
+        "id": 2,
+        "nombre": "Cobre",
+        "precio": 7000,
+        "presupuestoParcial": 0,
+        "cantidad": 0
+    },
+    {
+        "id": 3,
+        "nombre": "Plomo",
+        "precio": 2000,
+        "presupuestoParcial": 0,
+        "cantidad": 0
+    },
+    {
+        "id": 4,
+        "nombre": "Hierro",
+        "precio": 3000,
+        "presupuestoParcial": 0,
+        "cantidad": 0
+    },
+    {
+        "id": 5,
+        "nombre": "Bronce",
+        "precio": 2500,
+        "presupuestoParcial": 0,
+        "cantidad": 0
+    }
+]
